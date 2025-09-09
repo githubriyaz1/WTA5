@@ -1,0 +1,22 @@
+{
+  "name": "async-demo",
+  "version": "1.0.0",
+  "description": "A Node.js app demonstrating callbacks, promises, and async/await.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "async",
+    "callback",
+    "promise",
+    "node",
+    "express"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

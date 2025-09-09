@@ -1,0 +1,5 @@
+[
+  { "studentId": 1, "grades": [90, 85, 92] },
+  { "studentId": 2, "grades": [78, 88, 80] },
+  { "studentId": 3, "grades": [95, 98, 99] }
+]
