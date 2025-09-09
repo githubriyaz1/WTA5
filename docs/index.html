@@ -22,7 +22,6 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            /* A nice, modern gradient background is key for the glass effect */
             background: linear-gradient(45deg, #120e2e, #0e2a47, #3b284c);
             background-size: 200% 200%;
             animation: gradient-animation 15s ease infinite;
@@ -39,11 +38,9 @@
             margin: 0 auto;
             padding: 2.5em;
             border-radius: 15px;
-            
-            /* The Glassmorphism Effect */
             background: rgba(255, 255, 255, 0.1);
-            -webkit-backdrop-filter: blur(12px); /* For Safari */
-            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); /* Vendor prefix first */
+            backdrop-filter: blur(12px); /* Standard property last */
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
@@ -81,11 +78,6 @@
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
         }
-
-        button:active:not(:disabled) {
-            transform: translateY(-1px) scale(1.02);
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
-        }
         
         button:disabled {
             background: rgba(108, 117, 125, 0.5);
@@ -99,7 +91,6 @@
             border-radius: 10px;
             font-family: "Courier New", Courier, monospace;
             background: rgba(0, 0, 0, 0.2);
-            transition: background 0.3s ease;
         }
         
         #results p {
@@ -112,12 +103,6 @@
             border-radius: 8px;
             border-left: 4px solid;
             background: rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-        }
-
-        .result-block:hover {
-            transform: translateX(5px);
-            background: rgba(0, 0, 0, 0.3);
         }
         
         .result-block:last-child {
@@ -140,10 +125,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Asynchronous JavaScript Demo from RIYAZ</h1>
-        <p>Click the button to run the same logic using Callbacks, Promises, and Async/Await. The results will be written to new files in the <code>/data</code> directory and displayed below.</p>
+        <h1>Asynchronous JavaScript Demo</h1>
+        <p>This is a demonstration of a Node.js project. On a local server, clicking the button would trigger backend logic. Here on GitHub Pages, we simulate the successful result.</p>
         <div class="button-wrapper">
-            <button id="runBtn">Run Demo</button>
+            <button id="runBtn">Simulate Backend Logic</button>
         </div>
         <div id="results">
             <p>Results will be displayed here...</p>
@@ -154,51 +139,65 @@
         const runBtn = document.getElementById('runBtn');
         const resultsDiv = document.getElementById('results');
 
-        runBtn.addEventListener('click', async () => {
-            resultsDiv.innerHTML = '<p>Processing... Please wait.</p>';
+        // This is the data our Node.js server would normally create.
+        // We are "mocking" it here for the static site demonstration.
+        const mockData = {
+            "callback": {
+                "status": "Success ✅",
+                "message": "Successfully processed data and saved to data/results_callback.json"
+            },
+            "promise": {
+                "status": "Success ✅",
+                "message": "Successfully processed data and saved to data/results_promise.json"
+            },
+            "asyncAwait": {
+                "status": "Success ✅",
+                "message": "Successfully processed data and saved to data/results_async_await.json"
+            }
+        };
+
+        runBtn.addEventListener('click', () => {
+            resultsDiv.innerHTML = '<p>Simulating request to backend...</p>';
             runBtn.disabled = true;
 
-            try {
-                const response = await fetch('/run');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+            // FAKE THE API CALL
+            // We'll use a timeout to simulate a network request delay.
+            setTimeout(() => {
+                try {
+                    const data = mockData;
+                    let html = '';
+
+                    const cb = data.callback;
+                    html += `<div class="result-block ${cb.status === 'Error' ? 'error' : 'success'}">
+                        <p class="title">1. Callback Result (Simulated):</p>
+                        <p><strong>Status:</strong> ${cb.status}</p>
+                        <p><strong>Message:</strong> ${cb.message}</p>
+                    </div>`;
+
+                    const prom = data.promise;
+                    html += `<div class="result-block ${prom.status === 'Error' ? 'error' : 'success'}">
+                        <p class="title">2. Promise Result (Simulated):</p>
+                        <p><strong>Status:</strong> ${prom.status}</p>
+                        <p><strong>Message:</strong> ${prom.message}</p>
+                    </div>`;
+
+                    const aa = data.asyncAwait;
+                    html += `<div class="result-block ${aa.status === 'Error' ? 'error' : 'success'}">
+                        <p class="title">3. Async/Await Result (Simulated):</p>
+                        <p><strong>Status:</strong> ${aa.status}</p>
+                        <p><strong>Message:</strong> ${aa.message}</p>
+                    </div>`;
+
+                    resultsDiv.innerHTML = html;
+
+                } catch (error) {
+                    resultsDiv.innerHTML = `<div class="result-block error"><p class="title">Client-side Error:</p><p>${error.message}</p></div>`;
+                } finally {
+                    runBtn.disabled = false;
                 }
-                const data = await response.json();
-                
-                let html = '';
-
-                // Callback Results
-                const cb = data.callback;
-                html += `<div class="result-block ${cb.status === 'Error' ? 'error' : 'success'}">
-                    <p class="title">1. Callback Result:</p>
-                    <p><strong>Status:</strong> ${cb.status}</p>
-                    <p><strong>Message:</strong> ${cb.message}</p>
-                </div>`;
-
-                // Promise Results
-                const prom = data.promise;
-                html += `<div class="result-block ${prom.status === 'Error' ? 'error' : 'success'}">
-                    <p class="title">2. Promise Result:</p>
-                    <p><strong>Status:</strong> ${prom.status}</p>
-                    <p><strong>Message:</strong> ${prom.message}</p>
-                </div>`;
-
-                // Async/Await Results
-                const aa = data.asyncAwait;
-                html += `<div class="result-block ${aa.status === 'Error' ? 'error' : 'success'}">
-                    <p class="title">3. Async/Await Result:</p>
-                    <p><strong>Status:</strong> ${aa.status}</p>
-                    <p><strong>Message:</strong> ${aa.message}</p>
-                </div>`;
-
-                resultsDiv.innerHTML = html;
-
-            } catch (error) {
-                resultsDiv.innerHTML = `<div class="result-block error"><p class="title">Client-side Error:</p><p>${error.message}</p></div>`;
-            } finally {
-                runBtn.disabled = false;
-            }
+            }, 800); // 800ms delay
         });
     </script>
 </body>
 </html>
+
